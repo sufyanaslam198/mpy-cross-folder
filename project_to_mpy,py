@@ -1,0 +1,68 @@
+#! /usr/bin/env python3
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2023 Sufyan Mukadam
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+import argparse
+import mpy_cross
+import os
+import sys
+
+
+def main(folder):
+    convert_folder(folder)
+    items_in_folder = os.listdir(folder)
+    for element in items_in_folder:
+        if os.path.isdir(element):
+            convert_folder(f"{folder}/{element}")
+
+
+def convert_folder(folder):
+    items_in_folder = os.listdir(folder)
+    for element in items_in_folder:
+        if os.path.splitext(element)[1].upper() == ".PY":
+            mpy_cross.run(f"{folder}/{element}")
+            print(f"{folder}/{element}")
+
+
+def quit(msg):
+    print(msg)
+    sys.exit(1)
+
+
+DESC = """project_to_mpy.py V0.0.1
+Utility to convert the entire contents of a micropython project to pre complied .mpy files.
+Sample usage:
+project_to_mpy.py PATH_TO_FOLDER
+"""
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(__file__, description=DESC,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    parser.add_argument('infolder', type=str, help='Input folder path')
+    args = parser.parse_args()
+
+    if not os.path.isdir(args.infolder):
+        quit("Not a folder")
+
+    main(args.infolder)
